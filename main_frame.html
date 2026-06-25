@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>四层十维 · 系统分析的元框架</title>
+    <style>
+        /* ===== 重置与基础 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Noto Serif SC", "思源宋体", "方正启体", "华文楷体", "KaiTi", serif;
+            background: #080c18;
+            color: #d4c9b0;
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        /* ===== 滚动容器（分屏） ===== */
+        .scroll-container {
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+            height: 100vh;
+        }
+
+        .screen {
+            scroll-snap-align: start;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen .bg-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .screen .content {
+            position: relative;
+            z-index: 2;
+            max-width: 1000px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* ===== 滚动提示 ===== */
+        .scroll-hint {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            color: rgba(255, 255, 255, 0.06);
+            font-weight: 300;
+            animation: hintPulse 4s ease-in-out infinite;
+        }
+        @keyframes hintPulse {
+            0%,
+            100% {
+                opacity: 0.06;
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                opacity: 0.25;
+                transform: translateX(-50%) translateY(4px);
+            }
+        }
+
+        /* ===== 屏1：封面 ===== */
+        #screen-cover {
+            background: radial-gradient(ellipse at center 40%, #0a1a2e, #030812);
+        }
+        #screen-cover .bg-layer {
+            background: radial-gradient(ellipse at 30% 70%, rgba(20, 80, 160, 0.06), transparent 60%);
+        }
+        .cover-title {
+            font-size: 3.6rem;
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            color: #8ab8e0;
+            text-shadow: 0 0 80px rgba(60, 160, 255, 0.05);
+            margin-bottom: 0.6rem;
+        }
+        .cover-sub {
+            font-size: 1.2rem;
+            letter-spacing: 0.6em;
+            color: rgba(120, 180, 220, 0.4);
+            font-weight: 300;
+            margin-bottom: 2rem;
+        }
+        .cover-quote {
+            font-size: 1.2rem;
+            letter-spacing: 0.12em;
+            line-height: 2.4;
+            color: rgba(180, 210, 240, 0.5);
+            font-weight: 300;
+            border-top: 1px solid rgba(60, 150, 255, 0.06);
+            padding-top: 2rem;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+        .cover-quote em {
+            font-style: normal;
+            color: rgba(200, 220, 240, 0.7);
+        }
+
+        @media (max-width: 700px) {
+            .cover-title {
+                font-size: 2.2rem;
+                letter-spacing: 0.15em;
+            }
+            .cover-sub {
+                font-size: 0.9rem;
+                letter-spacing: 0.3em;
+            }
+            .cover-quote {
+                font-size: 0.95rem;
+                line-height: 2;
+            }
+        }
+
+        /* ===== 屏2：四层 ===== */
+        #screen-layers {
+            background: radial-gradient(ellipse at center 30%, #0d1f30, #050c18);
+        }
+        #screen-layers .bg-layer {
+            background: radial-gradient(ellipse at 50% 80%, rgba(40, 120, 200, 0.03), transparent 60%);
+        }
+        .section-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.6em;
+            color: rgba(160, 200, 230, 0.3);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+        }
+        .section-title {
+            font-size: 2.6rem;
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            color: #b0cce0;
+            margin-bottom: 2rem;
+        }
+        .section-sub {
+            font-size: 1rem;
+            letter-spacing: 0.2em;
+            color: rgba(160, 190, 210, 0.4);
+            margin-bottom: 2.5rem;
+            font-weight: 300;
+        }
+        .layers-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .layer-card {
+            border: 1px solid rgba(100, 180, 220, 0.06);
+            border-radius: 16px;
+            padding: 1.8rem 1rem;
+            background: rgba(255, 255, 255, 0.015);
+            backdrop-filter: blur(4px);
+            transition: all 0.4s ease;
+        }
+        .layer-card:hover {
+            border-color: rgba(100, 180, 220, 0.15);
+            background: rgba(255, 255, 255, 0.03);
+            transform: translateY(-4px);
+        }
+        .layer-card .lvl {
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            color: rgba(100, 180, 220, 0.25);
+            font-weight: 300;
+        }
+        .layer-card .name {
+            font-size: 1.6rem;
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            color: #8ab8e0;
+            margin: 0.3rem 0 0.2rem;
+        }
+        .layer-card .sub {
+            font-size: 0.85rem;
+            color: rgba(160, 190, 210, 0.4);
+            font-weight: 300;
+            letter-spacing: 0.05em;
+        }
+        .layer-card .desc {
+            font-size: 0.75rem;
+            color: rgba(160, 190, 210, 0.3);
+            line-height: 1.6;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 700px) {
+            .layers-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            .layer-card {
+                padding: 1.2rem 0.8rem;
+            }
+            .layer-card .name {
+                font-size: 1.2rem;
+            }
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+        @media (max-width: 450px) {
+            .layers-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.6rem;
+            }
+            .layer-card .desc {
+                font-size: 0.6rem;
+            }
+        }
+
+        /* ===== 屏3：十维总览 ===== */
+        #screen-dimensions {
+            background: radial-gradient(ellipse at center 40%, #0a1a2e, #040a16);
+        }
+        #screen-dimensions .bg-layer {
+            background: radial-gradient(ellipse at 60% 30%, rgba(60, 120, 200, 0.03), transparent 50%);
+        }
+        .dim-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            max-width: 950px;
+            margin: 0 auto;
+        }
+        .dim-card {
+            border: 1px solid rgba(100, 180, 220, 0.05);
+            border-radius: 12px;
+            padding: 1.2rem 0.6rem;
+            background: rgba(255, 255, 255, 0.01);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        .dim-card:hover {
+            border-color: rgba(100, 180, 220, 0.12);
+            background: rgba(255, 255, 255, 0.025);
+            transform: translateY(-2px);
+        }
+        .dim-card .char {
+            font-size: 2rem;
+            font-weight: 300;
+            color: #8ab8e0;
+            display: block;
+            letter-spacing: 0.1em;
+        }
+        .dim-card .label {
+            font-size: 0.65rem;
+            color: rgba(160, 190, 210, 0.3);
+            letter-spacing: 0.1em;
+            margin-top: 0.1rem;
+        }
+        .dim-card .hint {
+            font-size: 0.55rem;
+            color: rgba(160, 190, 210, 0.15);
+            margin-top: 0.3rem;
+            line-height: 1.4;
+        }
+        .dim-card .layer-tag {
+            position: absolute;
+            top: 0.4rem;
+            right: 0.6rem;
+            font-size: 0.45rem;
+            color: rgba(100, 180, 220, 0.12);
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 700px) {
+            .dim-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 0.6rem;
+            }
+            .dim-card {
+                padding: 0.8rem 0.3rem;
+            }
+            .dim-card .char {
+                font-size: 1.4rem;
+            }
+            .dim-card .label {
+                font-size: 0.5rem;
+            }
+            .dim-card .hint {
+                display: none;
+            }
+        }
+        @media (max-width: 450px) {
+            .dim-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 0.4rem;
+            }
+            .dim-card .char {
+                font-size: 1.1rem;
+            }
+            .dim-card .label {
+                font-size: 0.4rem;
+            }
+            .dim-card .layer-tag {
+                display: none;
+            }
+        }
+
+        /* ===== 屏4：十维详解 ===== */
+        #screen-detail {
+            background: radial-gradient(ellipse at center 30%, #0c1a2a, #040810);
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        .detail-item {
+            border-bottom: 1px solid rgba(100, 180, 220, 0.04);
+            padding: 0.6rem 0.4rem;
+        }
+        .detail-item .d-char {
+            font-size: 1.6rem;
+            font-weight: 300;
+            color: #8ab8e0;
+            letter-spacing: 0.1em;
+            display: inline-block;
+            width: 2.2rem;
+        }
+        .detail-item .d-name {
+            font-size: 0.8rem;
+            color: rgba(180, 210, 230, 0.5);
+            letter-spacing: 0.05em;
+            font-weight: 300;
+        }
+        .detail-item .d-desc {
+            font-size: 0.7rem;
+            color: rgba(160, 190, 210, 0.25);
+            line-height: 1.5;
+            margin-top: 0.1rem;
+            padding-left: 2.2rem;
+        }
+
+        @media (max-width: 700px) {
+            .detail-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.6rem;
+            }
+            .detail-item .d-char {
+                font-size: 1.2rem;
+                width: 1.8rem;
+            }
+            .detail-item .d-desc {
+                font-size: 0.6rem;
+                padding-left: 1.8rem;
+            }
+        }
+
+        /* ===== 屏5：传动 ===== */
+        #screen-flow {
+            background: radial-gradient(ellipse at center 30%, #0d1f30, #050c18);
+        }
+        #screen-flow .bg-layer {
+            background: radial-gradient(ellipse at 40% 60%, rgba(40, 180, 200, 0.02), transparent 60%);
+        }
+        .flow-text {
+            max-width: 750px;
+            margin: 0 auto 2rem;
+            font-size: 1rem;
+            line-height: 2.4;
+            color: rgba(180, 210, 230, 0.5);
+            font-weight: 300;
+            letter-spacing: 0.05em;
+        }
+        .flow-text strong {
+            font-weight: 400;
+            color: rgba(200, 220, 240, 0.7);
+        }
+        .flow-chain {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.2rem 0.6rem;
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            color: rgba(160, 190, 210, 0.3);
+        }
+        .flow-chain .hl {
+            color: rgba(200, 220, 240, 0.5);
+        }
+        .flow-chain .arrow {
+            color: rgba(100, 180, 220, 0.1);
+        }
+
+        /* ===== 屏6：经脉 ===== */
+        #screen-jingmai {
+            background: radial-gradient(ellipse at center 40%, #0a1a2e, #030812);
+        }
+        #screen-jingmai .bg-layer {
+            background: radial-gradient(ellipse at 50% 50%, rgba(180, 140, 255, 0.02), transparent 60%);
+        }
+        .jingmai-text {
+            max-width: 750px;
+            margin: 0 auto;
+            font-size: 1rem;
+            line-height: 2.6;
+            color: rgba(180, 200, 230, 0.5);
+            font-weight: 300;
+            letter-spacing: 0.05em;
+        }
+        .jingmai-text em {
+            font-style: normal;
+            color: rgba(200, 180, 230, 0.7);
+        }
+
+        /* ===== 屏7：五境→三境→不器 ===== */
+        #screen-evolution {
+            background: radial-gradient(ellipse at center 30%, #0d1f30, #050c18);
+        }
+        #screen-evolution .bg-layer {
+            background: radial-gradient(ellipse at 60% 40%, rgba(255, 200, 100, 0.02), transparent 50%);
+        }
+        .evo-flow {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 0.3rem 0.8rem;
+            max-width: 800px;
+            margin: 1.5rem auto;
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+            color: rgba(160, 190, 210, 0.3);
+        }
+        .evo-flow .stage {
+            color: rgba(200, 220, 240, 0.5);
+            font-weight: 300;
+        }
+        .evo-flow .arrow {
+            color: rgba(100, 180, 220, 0.08);
+        }
+        .evo-flow .highlight {
+            color: rgba(255, 200, 100, 0.3);
+            font-weight: 300;
+        }
+        .evo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 850px;
+            margin: 2rem auto 0;
+        }
+        .evo-card {
+            border: 1px solid rgba(100, 180, 220, 0.04);
+            border-radius: 14px;
+            padding: 1.5rem 1rem;
+            background: rgba(255, 255, 255, 0.01);
+            text-align: center;
+        }
+        .evo-card .num {
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: rgba(100, 180, 220, 0.15);
+            letter-spacing: 0.1em;
+        }
+        .evo-card .title {
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: #8ab8e0;
+            margin: 0.3rem 0 0.2rem;
+            letter-spacing: 0.1em;
+        }
+        .evo-card .sub {
+            font-size: 0.7rem;
+            color: rgba(160, 190, 210, 0.3);
+            letter-spacing: 0.1em;
+        }
+        .evo-card .desc {
+            font-size: 0.8rem;
+            color: rgba(160, 190, 210, 0.3);
+            line-height: 1.8;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 700px) {
+            .evo-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                max-width: 400px;
+            }
+            .evo-flow {
+                font-size: 0.8rem;
+                gap: 0.2rem 0.4rem;
+            }
+        }
+
+        /* ===== 屏8：意境 ===== */
+        #screen-yijing {
+            background: radial-gradient(ellipse at center 30%, #0a1a2e, #030812);
+        }
+        #screen-yijing .bg-layer {
+            background: radial-gradient(ellipse at 30% 40%, rgba(60, 160, 255, 0.02), transparent 50%),
+                radial-gradient(ellipse at 70% 60%, rgba(180, 140, 255, 0.02), transparent 50%);
+        }
+        .yijing-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.8rem;
+            max-width: 850px;
+            margin: 0 auto 2rem;
+        }
+        .yi-card {
+            border: 1px solid rgba(100, 180, 220, 0.04);
+            border-radius: 12px;
+            padding: 1.2rem 0.4rem;
+            background: rgba(255, 255, 255, 0.01);
+            text-align: center;
+            transition: all 0.4s ease;
+        }
+        .yi-card:hover {
+            border-color: rgba(100, 180, 220, 0.08);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .yi-card .char {
+            font-size: 2.4rem;
+            font-weight: 300;
+            display: block;
+            letter-spacing: 0.1em;
+        }
+        .yi-card .char.c-yuan {
+            color: rgba(60, 140, 220, 0.4);
+        }
+        .yi-card .char.c-xin {
+            color: rgba(80, 170, 255, 0.4);
+        }
+        .yi-card .char.c-ye {
+            color: rgba(60, 200, 180, 0.35);
+        }
+        .yi-card .char.c-lian {
+            color: rgba(200, 170, 255, 0.35);
+        }
+        .yi-card .char.c-yun {
+            color: rgba(220, 230, 240, 0.3);
+        }
+        .yi-card .label {
+            font-size: 0.65rem;
+            color: rgba(160, 190, 210, 0.25);
+            letter-spacing: 0.2em;
+            margin-top: 0.2rem;
+        }
+        .yi-card .desc {
+            font-size: 0.6rem;
+            color: rgba(160, 190, 210, 0.15);
+            line-height: 1.5;
+            margin-top: 0.3rem;
+        }
+        .yijing-summary {
+            max-width: 750px;
+            margin: 0 auto;
+            font-size: 0.95rem;
+            line-height: 2.4;
+            color: rgba(180, 210, 230, 0.35);
+            font-weight: 300;
+            letter-spacing: 0.05em;
+        }
+        .yijing-summary em {
+            font-style: normal;
+            color: rgba(200, 220, 240, 0.5);
+        }
+
+        @media (max-width: 700px) {
+            .yijing-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 0.4rem;
+            }
+            .yi-card {
+                padding: 0.8rem 0.2rem;
+            }
+            .yi-card .char {
+                font-size: 1.6rem;
+            }
+            .yi-card .desc {
+                display: none;
+            }
+            .yijing-summary {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* ===== 屏9：尾声 ===== */
+        #screen-end {
+            background: radial-gradient(ellipse at center 40%, #0a1a2e, #030812);
+        }
+        #screen-end .bg-layer {
+            background: radial-gradient(ellipse at 50% 70%, rgba(60, 160, 255, 0.02), transparent 60%);
+        }
+        .end-title {
+            font-size: 2.8rem;
+            font-weight: 200;
+            letter-spacing: 0.6em;
+            color: rgba(180, 210, 230, 0.15);
+        }
+        .end-quote {
+            max-width: 700px;
+            margin: 2rem auto;
+            font-size: 1.1rem;
+            line-height: 2.6;
+            color: rgba(180, 210, 230, 0.3);
+            font-weight: 300;
+            letter-spacing: 0.08em;
+        }
+        .end-quote em {
+            font-style: normal;
+            color: rgba(200, 220, 240, 0.4);
+        }
+        .end-tag {
+            font-size: 0.6rem;
+            letter-spacing: 0.6em;
+            color: rgba(160, 190, 210, 0.06);
+            margin-top: 2rem;
+            font-weight: 300;
+        }
+
+        @media (max-width: 700px) {
+            .end-title {
+                font-size: 1.8rem;
+                letter-spacing: 0.3em;
+            }
+            .end-quote {
+                font-size: 0.9rem;
+                line-height: 2.2;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scroll-container">
+
+        <!-- ========================================== -->
+        <!-- 屏1：封面                                   -->
+        <!-- ========================================== -->
+        <section class="screen" id="screen-cover">
+            <div class="bg-layer"></div>
+            <div class="content">
+                <div class="cover-title">四层十维</div>
+                <div class="cover-sub">系统分析的元框架</div>
+                <div class="cover-quote">
+                    渊之深兮，藏万象之机。<br />
+                    云之游兮，衍万化之律。<br />
+                    <em>—— 渊云不器 · 四层十维</em>
+                </div>
+            </div>
+            <div class="scroll-hint"><span>⟱ 向下 · 探渊衍云 ⟱</span></div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 屏2：四层                                   -->
+        <!-- ========================================== -->
+        <section class="screen" id="screen-layers">
+            <div class="bg-layer"></div>
+            <div class="content">
+                <div class="section-label">The Architecture</div>
+                <div class="section-title">四层 · 认知架构</div>
+                <div class="section-sub">从无形到有形 · 从根基到进化</div>
+
+                <div class="layers-grid">
+                    <div class="layer-card">
+                        <div class="lvl">L1</div>
+                        <div class="name">认知根基</div>
+                        <div class="sub">理 · 念 · 心</div>
+                        <div class="desc">系统凭什么存在？<br />认知、信念、文化</div>
+                    </div>
+                    <div class="layer-card">
+                        <div class="lvl">L2</div>
+                        <div class="name">系统框架</div>
+                        <div class="sub">道 · 熵 · 法</div>
+                        <div class="desc">系统如何运转？<br />结构、规则、动力</div>
+                    </div>
+                    <div class="layer-card">
+                        <div class="lvl">L3</div>
+                        <div class="name">执行操作</div>
+                        <div class="sub">术 · 器 · 行</div>
+                        <div class="desc">系统做什么？<br />操作、工具、纪律</div>
+                    </div>
+                    <div class="layer-card">
+                        <div class="lvl">L4</div>
+                        <div class="name">反馈进化</div>
+                        <div class="sub">果</div>
+                        <div class="desc">系统如何变好？<br />度量、学习、迭代</div>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-hint"><span>⟱ 四层落地 · 十维展开 ⟱</span></div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 屏3：十维总览                               -->
+        <!-- ========================================== -->
+        <section class="screen" id="screen-dimensions">
+            <div class="bg-layer"></div>
+            <div class="content">
+                <div class="section-label">The Ten Dimensions</div>
+                <div class="section-title">十维 · 完整清单</div>
+                <div class="section-sub">十维具足 · 系统自成</div>
+
+                <div class="dim-grid">
+                    <div class="dim-card"><span class="layer-tag">L1</span><span class="char">理</span><span class="label">认知地基</span><span class="hint">凭什么判断</span></div>
+                    <div class="dim-card"><span class="layer-tag">L1</span><span class="char">念</span><span class="label">价值导向</span><span class="hint">往哪里去</span></div>
+                    <div class="dim-card"><span class="layer-tag">L1</span><span class="char">心</span><span class="label">心理文化</span><span class="hint">凭什么凝聚</span></div>
+                    <div class="dim-card"><span class="layer-tag">L2</span><span class="char">道</span><span class="label">传动逻辑</span><span class="hint">怎么传动</span></div>
+                    <div class="dim-card"><span class="layer-tag">L2</span><span class="char">熵</span><span class="label">动力源</span><span class="hint">动力何来</span></div>
+                    <div class="dim-card"><span class="layer-tag">L2</span><span class="char">法</span><span class="label">运行规则</span><span class="hint">依何规则</span></div>
+                    <div class="dim-card"><span class="layer-tag">L3</span><span class="char">术</span><span class="label">操作技能</span><span class="hint">如何操作</span></div>
+                    <div class="dim-card"><span class="layer-tag">L3</span><span class="char">器</span><span class="label">工具平台</span><span class="hint">以何承载</span></div>
+                    <div class="dim-card"><span class="layer-tag">L3</span><span class="char">行</span><span class="label">执行纪律</span><span class="hint">靠何保障</span></div>
+                    <div class="dim-card"><span class="layer-tag">L4</span><span class="char">果</span><span class="label">结果度量</span><span class="hint">以何验证</span></div>
+                </div>
+            </div>
+            <div class="scroll-hint"><span>⟱ 逐维解析 ⟱</span></div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 屏4：十维详解                               -->
+        <!-- ========================================== -->
+        <section class="screen" id="screen-detail">
+            <div class="bg-layer"></div>
+            <div class="content">
+                <div class="section-label">Dimension Details</div>
+                <div class="section-title">十维 · 意蕴解析</div>
+
+                <div class="detail-grid">
+                    <div class="detail-item"><span class="d-char">理</span><span class="d-name">认知地基</span><div class="d-desc">知识库、模型假设、判断依据</div></div>
+                    <div class="detail-item"><span class="d-char">念</span><span class="d-name">价值导向</span><div class="d-desc">目标、使命、愿景、价值观</div></div>
+                    <div class="detail-item"><span class="d-char">心</span><span class="d-name">心理文化</span><div class="d-desc">信任、氛围、心理安全、情绪</div></div>
+                    <div class="detail-item"><span class="d-char">道</span><span class="d-name">传动逻辑</span><div class="d-desc">信息·能量·物质的流动与转化</div></div>
+                    <div class="detail-item"><span class="d-char">熵</span><span class="d-name">动力源</span><div class="d-desc">压力差、失衡、自组织动力</div></div>
+                    <div class="detail-item"><span class="d-char">法</span><span class="d-name">运行规则</span><div class="d-desc">标准化流程、约束、奖惩</div></div>
+                    <div class="detail-item"><span class="d-char">术</span><span class="d-name">操作技能</span><div class="d-desc">具体方法、技巧、操作步骤</div></div>
+                    <div class="detail-item"><span class="d-char">器</span><span class="d-name">工具平台</span><div class="d-desc">技术、设备、软件、数据</div></div>
+                    <div class="detail-item"><span class="d-char">行</span><span class="d-name">执行纪律</span><div class="d-desc">规范、节奏、责任、纪律</div></div>
+                    <div class="detail-item"><span class="d-char">果</span><span class="d-name">结果度量</span><div class="d-desc">绩效、成果、闭环验证</div></div>
+                </div>
+            </div>
+            <div class="scroll-hint"><span>⟱ 传动之道 ⟱</span></div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 屏5：传动                                   -->
+        <!-- ========================================== -->
+        <section class="screen" id="screen-flow">
+            <div class="bg-layer"></div>
+            <div class="content">
+                <div class="section-label">The Transmission Chain</div>
+                <div class="section-title">传动 · 从理到果</div>
+
+                <div class="flow-text">
+                    <strong>理为基</strong>，认知的起点；<strong>念为先</strong>，方向的灯塔；<strong>心为凭</strong>，执行的保障。<br />
+                    <strong>道为枢</strong>，传动的枢纽；<strong>熵为源</strong>，不竭的动力；<strong>法为依</strong>，规则的依凭。<br />
+                    <strong>术为体</strong>，方法的肉身；<strong>器为御</strong>，工具的承载；<strong>行为据</strong>，纪律的守护。<br />
+                    <strong>果为证</strong>，闭环的验证。
+                </div>
+
+                <div class="flow-chain">
+                    <span class="hl">理</span> <span class="arrow">→</span>
+                    <span class="hl">念</span> <span class="arrow">→</span>
+                    <span class="hl">心</span> <span class="arrow">→</span>
+                    <span class="hl">道</span> <span class="arrow">→</span>
+                    <span class="hl">熵</span> <span class="arrow">→</span>
+                    <span class="hl">法</span> <span class="arrow">→</span>
+                    <span class="hl">术</span> <span class="arrow">→</span>
+                    <span class="hl">器</span> <span class="arrow">→</span>
+                    <span class="hl">行</span> <span class="arrow">→</span>
+                    <span class="hl">果</span>
+                </div>
+            </div>
+            <div class="scroll-hint"><span>⟱ 经脉 · 能量流动之道 ⟱</span></div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 屏6：经脉                                   -->
+        <!-- ========================================== -->
+        <section class="screen" id="screen-jingmai">
+            <div class="bg-layer"></div>
+            <div class="content">
+                <div class="section-label">The Meridian</div>
+                <div class="section-title">经脉 · 系统运转的虚无通道</div>
+
+                <div class="jingmai-text">
+                    十维之间的关系，不仅仅是静态的矩阵，更是<em>动态的能量流动路径</em>。<br /><br />
+                    维度间的关系制度化、程序化之后，便形成了系统的<em>经脉</em>。<br />
+                    如同人体经络，<em>通则不痛，痛则不通</em>。<br /><br />
+                    经脉导引方向、约束大小、控制速度。<br />
+                    经脉堵塞，则传动断裂；经脉畅通，则能量自流。
+                </div>
+            </div>
+            <div class="scroll-hint"><span>⟱ 从无到有 · 从有到衍 ⟱</span></div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 屏7：五境→三境→不器                          -->
+        <!-- ========================================== -->
+        <section class="screen" id="screen-evolution">
+            <div class="bg-layer"></div>
+            <div class="content">
+                <div class="section-label">The Evolution Path</div>
+                <div class="section-title">五境 · 三境 · 不器</div>
+                <div class="section-sub">每个维度的进化刻度 · 质变节点 · 终极指向</div>
+
+                <div class="evo-flow">
+                    <span class="stage">无</span> <span class="arrow">→</span>
+                    <span class="stage">有</span> <span class="arrow">→</span>
+                    <span class="stage">定</span> <span class="arrow">→</span>
+                    <span class="stage">合</span> <span class="arrow">→</span>
+                    <span class="stage">衍</span>
+                    <span style="color:rgba(100,180,220,0.08);margin:0 0.4rem;">｜</span>
+                    <span class="highlight">第一境</span>
+                    <span class="arrow">→</span>
+                    <span class="highlight">第二境</span>
+                    <span class="arrow">→</span>
+                    <span class="highlight">第三境</span>
+                    <span style="color:rgba(100,180,220,0.08);margin:0 0.4rem;">｜</span>
+                    <span style="color:rgba(255,200,100,0.2);font-weight:300;">不器</span>
+                </div>
+
+                <div class="evo-grid">
+                    <div class="evo-card">
+                        <div class="num">第一境</div>
+                        <div class="title">建立与巩固</div>
+                        <div class="sub">有 → 定</div>
+                        <div class="desc">让维度“立得住”<br />从无到有，从有到定<br />形成稳定框架</div>
+                    </div>
+                    <div class="evo-card">
+                        <div class="num">第二境</div>
+                        <div class="title">贯通与整合</div>
+                        <div class="sub">定 → 合</div>
+                        <div class="desc">让维度“融得进”<br />内合归一，外合协同<br />内外贯通无碍</div>
+                    </div>
+                    <div class="evo-card">
+                        <div class="num">第三境</div>
+                        <div class="title">超越与进化</div>
+                        <div class="sub">合 → 衍</div>
+                        <div class="desc">让维度“活得了”<br />自组织、自涌现、自衍化<br /><span style="color:rgba(255,200,100,0.15);">→ 不器</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-hint"><span>⟱ 渊云意境 · 六层衍化 ⟱</span></div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 屏8：意境                                   -->
+        <!-- ========================================== -->
+        <section class="screen" id="screen-yijing">
+            <div class="bg-layer"></div>
+            <div class="content">
+                <div class="section-label">The Yijing</div>
+                <div class="section-title">渊 · 心 · 叶 · 莲 · 云</div>
+                <div class="section-sub">从根基到自由的衍化之链</div>
+
+                <div class="yijing-grid">
+                    <div class="yi-card"><span class="char c-yuan">渊</span><span class="label">根基</span><span class="desc">静默如渊<br />深不可测</span></div>
+                    <div class="yi-card"><span class="char c-xin">心</span><span class="label">力量</span><span class="desc">约束熵为动<br />系统成长的凭借</span></div>
+                    <div class="yi-card"><span class="char c-ye">叶</span><span class="label">生机</span><span class="desc">光合转化<br />滋养万物</span></div>
+                    <div class="yi-card"><span class="char c-lian">莲</span><span class="label">境界</span><span class="desc">空间与时间<br />法则与运转</span></div>
+                    <div class="yi-card"><span class="char c-yun">云</span><span class="label">自由</span><span class="desc">衍化涌现<br />不器之境</span></div>
+                </div>
+
+                <div class="yijing-summary">
+                    <em>渊</em>是根基，<em>心</em>是力量，<em>叶</em>是生机，<em>莲</em>是境界，<em>云</em>是自由。<br />
+                    渊是静的，云是动的。渊是守，云是放。<br />
+                    从渊到云，每一步都在向上，每一步都在变得更轻、更自由。<br />
+                    水从渊中流出，蒸腾为云，降落为雨，复归渊中——<em>循环无端，衍化不息</em>。
+                </div>
+            </div>
+            <div class="scroll-hint"><span>⟱ 归渊 · 生生不息 ⟱</span></div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 屏9：尾声                                   -->
+        <!-- ========================================== -->
+        <section class="screen" id="screen-end">
+            <div class="bg-layer"></div>
+            <div class="content">
+                <div class="end-title">渊 云 不 器</div>
+                <div class="end-quote">
+                    <em>“不拘于理，不束于念，不住于心，不滞于道，<br />
+                    不困于熵，不囿于法，不碍于术，不器于器，<br />
+                    不违于行，不迷于果。”</em>
+                </div>
+                <div style="font-size:0.8rem;color:rgba(160,190,210,0.12);letter-spacing:0.3em;font-weight:300;line-height:2.2;max-width:650px;margin:0 auto;">
+                    四层十维 · 系统分析的元框架<br />
+                    水若渊，心为凭，叶之基，莲以生，云乃行。
+                </div>
+                <div class="end-tag">— 渊 云 不 器 · 循 环 无 端 —</div>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>
