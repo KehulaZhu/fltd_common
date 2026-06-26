@@ -255,7 +255,7 @@
 > 应在使用本文档的全部或部分内容时候，注明原作者及来源信息，包括：
 > 1. 作者笔名：渊云
 > 2. 原始网站地址：https://gitcode.com/user/kehula
-> 3. 本书源代码仓库：https://gitcode.com/kehula/sixiang_analysis
+> 3. 本书源代码仓库：https://gitcode.com/kehula/fltd_common
 
 > **非商业性使用：**
 >
