@@ -11,7 +11,7 @@
 
 # 第一部分：系统思维基础
 
-## 第1章 系统论的起源与发展
+## [第1章 系统论的起源与发展](https://gitcode.com/kehula/fltd_common/blob/main/Chapter01.md)
 
 ### 1.1 还原论与整体论的辩论
 ### 1.2 一般系统论（贝塔朗菲）
