@@ -262,15 +262,15 @@
 
 # 附录
 
-- 附录A：四层十维自检量表（十维五境评分标准与解释）
-- 附录B：维度关系矩阵模板（10×10）
-- 附录C：系统动力学建模入门
-- 附录D：常见系统分析工具清单（因果回路图、存量-流量图、雷达图、成熟度评估表）
-- 附录E：熵控策略设计模板（含约束、疏导、导引、应用四环设计）
-- 附录F：经脉设计模板（能量流向图、堵塞诊断表）
-- 附录G：术语表（中英文对照）
-- 附录H：理论溯源与参考文献
-- 附录I：教学建议与考核方案（供教师参考）
+- [附录A：四层十维自检量表（十维五境评分标准与解释）](https://gitcode.com/kehula/fltd_common/blob/main/Appendix_A.md)
+- [附录B：维度关系矩阵模板（10×10）](https://gitcode.com/kehula/fltd_common/blob/main/Appendix_B.md)
+- [附录C：系统动力学建模入门](https://gitcode.com/kehula/fltd_common/blob/main/Appendix_C.md)
+- [附录D：常见系统分析工具清单（因果回路图、存量-流量图、雷达图、成熟度评估表）](https://gitcode.com/kehula/fltd_common/blob/main/Appendix_D.md)
+- [附录E：熵控策略设计模板（含约束、疏导、导引、应用四环设计）](https://gitcode.com/kehula/fltd_common/blob/main/Appendix_E.md)
+- [附录F：经脉设计模板（能量流向图、堵塞诊断表）](https://gitcode.com/kehula/fltd_common/blob/main/Appendix_F.md)
+- [附录G：术语表（中英文对照）](https://gitcode.com/kehula/fltd_common/blob/main/Appendix_G.md)
+- [附录H：理论溯源与参考文献](https://gitcode.com/kehula/fltd_common/blob/main/Appendix_H.md)
+- [附录I：教学建议与考核方案（供教师参考）](https://gitcode.com/kehula/fltd_common/blob/main/Appendix_I.md)
 
 
 # 教材特色总结
