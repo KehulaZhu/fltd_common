@@ -7,7 +7,7 @@
 
 | 中文术语 | 英文翻译 | 释义 |
 | :--- | :--- | :--- |
-| 不器 | Non-instrumental / Beyond Utility | 不拘泥于固定形态，灵活应变，超越工具本身——十维进化的终极指向 |
+| 不器 | Fly Over Cloud(FOC)/Non-instrumental / Beyond Utility | 不拘泥于固定形态，灵活应变，超越工具本身——十维进化的终极指向 |
 | 层次 | Layer | 四层十维框架中的四个分析层级：L1认知根基、L2系统框架、L3执行操作、L4反馈进化 |
 | 反馈进化 | Feedback Evolution (L4) | 第四层，包含果一个维度 |
 | 认知根基 | Cognitive Foundation (L1) | 第一层，包含理、念、心三个维度 |
