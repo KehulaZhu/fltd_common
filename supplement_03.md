@@ -206,71 +206,15 @@ flowchart TD
 | 果的反馈在持续校正经脉方向 | 经脉路径偏离目标却未被校正 |
 
 
-## 七、核心要义 Mermaid 图
+## 七、总结
 
-```mermaid
-flowchart TD
-    subgraph 八个维度的支撑
-        A["理（L1）<br>认知基础"]
-        B["念（L1）<br>方向导引"]
-        C["心（L1）<br>信任安全"]
-        D["法（L2）<br>规则约束"]
-        E["术（L2）<br>操作方法"]
-        F["器（L2）<br>工具承载"]
-        G["行（L3）<br>运转保障"]
-        H["果（L4）<br>校正维护"]
-    end
-
-    subgraph 经脉核心
-        I["经脉<br>虚无通道"]
-        J["能量自流<br>传动顺畅"]
-        K["经脉堵塞<br>传动断裂"]
-    end
-
-    subgraph 经脉中的流动内容
-        L["熵动力<br>持续运转的驱动力"]
-        M["道枢<br>关键转换节点"]
-    end
-
-    A -->|"判断流向"| I
-    B -->|"引导方向"| I
-    C -->|"敢于流动"| I
-    D -->|"框定边界"| I
-    E -->|"提供步骤"| I
-    F -->|"提供载体"| I
-    G -->|"持续使用"| I
-    H -->|"修正路径"| I
-
-    L -->|"流经"| I
-    I -->|"连接"| M
-
-    I -->|"畅通"| J
-    I -->|"堵塞"| K
-
-    style I fill:#8e44ad,color:#fff
-    style A fill:#2980b9,color:#fff
-    style B fill:#2980b9,color:#fff
-    style C fill:#2980b9,color:#fff
-    style D fill:#1abc9c,color:#fff
-    style E fill:#1abc9c,color:#fff
-    style F fill:#1abc9c,color:#fff
-    style G fill:#2ecc71,color:#fff
-    style H fill:#d4a017,color:#fff
-    style L fill:#f39c12,color:#fff
-    style M fill:#e74c3c,color:#fff
-    style J fill:#27ae60,color:#fff
-    style K fill:#c0392b,color:#fff
-```
-
-## 八、总结
-
-### 8.1 经脉增补前后对比
+### 7.1 经脉增补前后对比
 
 | 概念 | 原表述 | 增补后表述 |
 |:---|:---|:---|
 | 经脉 | 虚无通道 | 虚无通道 + 八个维度的共同支撑 |
 
-### 8.2 与熵为源增补（增补一）和果增补（增补二）的关联
+### 7.2 与熵为源增补（增补一）和果增补（增补二）的关联
 
 | 增补 | 核心内容 | 与经脉的关系 |
 |:---|:---|:---|
